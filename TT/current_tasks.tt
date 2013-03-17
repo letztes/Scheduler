@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>scheduler</title>
+        <link rel="stylesheet" type="text/css" href="TT/styles.css">
+        <script src="TT/jquery-1.9.1.min.js"></script>
+        <script src="TT/script.js"></script>
+    </head>
+    <body>
+        <h1>Zu erledigen</h1>
+        [% IF tasks %]
+            [% FOREACH task IN tasks %]
+                <div class="todo_tasks">
+                    <form id="form_[% task.id %]" method="post" action="?">
+                        <input type="hidden" id="user_id" name="user_id" value="[% user_id %]">
+                        <input type="hidden" id="task_id" name="task_id" value="[% task.id %]">
+                        <input type="hidden" id="task_name" name="task_name" value="[% task.name %]">
+                        <input type="hidden" id="todo_[% task.id %]" name="todo"    value="show_current_tasks">
+                        <b>[% task.name %]</b> <br>
+                        [% task.description %] <br>
+                        <div class="icons">
+                            <a href="#" id="done_[% task.id %]" title="Aufgabe erledigt" onclick="$('#todo_[% task.id %]').val('mark_task_as_done');$('form_[% task.id %]').submit();">
+                                <img src="TT/img/ok.png">
+                            </a>
+                        </div>
+                        <div class="icons">
+                            <a href="#" id="schedule_[% task.id %]" title="Zeitplan bearbeiten" src="TT/img/preferences.png" onclick="$('#todo_[% task.id %]').val('show_schedule');$('form_[% task.id %]').submit();">
+                                <img src="TT/img/preferences.png">
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            [% END %]
+        [% ELSE %]
+            <p class="todo_tasks up_to_date">
+                Everything up to date.
+            </p>
+        [% END %]
+    </body>
+</html>

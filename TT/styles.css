@@ -1,0 +1,32 @@
+.todo_tasks {
+    margin-bottom:10px;
+    padding:10px;
+    border-width:medium;
+    border-color:#aaa;
+    border-style:dotted;
+    border-radius:10px;
+    background-color:#fee;
+    overflow-x:auto;
+    overflow-y:auto;
+}
+.up_to_date {
+    background-color:#efe !important;
+}
+.icons {
+    background-color:#eed1d1;
+    margin:5px;
+    padding:5px;
+    float:left;
+    border-radius:10px;
+    border-width:medium;
+    border-color:000;
+}
+.hovered {
+    background-color:#edd;
+}
+.even {
+    background-color:#fee;
+}
+.odd {
+    background-color:#eed1d1;
+}

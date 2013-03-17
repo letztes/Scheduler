@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>scheduler</title>
+        <link rel="stylesheet" type="text/css" href="TT/styles.css">
+        <script src="TT/jquery-1.9.1.min.js"></script>
+        <script src="TT/script.js"></script>
+        </script>
+    </head>
+    <body>
+        <h1>Tasks in schedule</h1>
+        <form method="post" action="?todo=save_preferences">
+            <input type="hidden" name="user_id" value="[% user_id %]">
+
+        </form>
+    </body>
+</html>
