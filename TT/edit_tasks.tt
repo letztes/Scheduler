@@ -1,17 +1,187 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
-        <title>scheduler</title>
-        <link rel="stylesheet" type="text/css" href="TT/styles.css">
-        <script src="TT/jquery-1.9.1.min.js"></script>
-        <script src="TT/script.js"></script>
-        </script>
+        <title>Edit tasks</title>
+
+        [% INCLUDE head.tt %]
+
     </head>
     <body>
-        <h1>Tasks in schedule</h1>
+
+        [% INCLUDE navigation_bar.tt %]
+
+        <h1>Aufgabenpläne</h1>
         <form method="post" action="?todo=save_preferences">
             <input type="hidden" name="user_id" value="[% user_id %]">
+            
+                [% IF schedule_entries %]
+                
+                    <table id="schedule_table" class="schedule_table" border="1">
+                        <tr>
+                            <th title="Name der Aufgabe">Aufgabe</th>
+                            <th title="Tag des Monats">DoM</th>
+                            <th title="Wochentag">DoW</th>
+                            <th title="Monat">Monat</th>
+                            <th title="Intervall-Wert und Name">Intervall</th>
+                            <th title="Plan für diese Aufgabe löschen">Löschen</th>
+                            <th title="Plan für diese Aufgabe aktualisieren">Update</th>
+                        </tr>
+                        
+                        <tr class="even">
+                            <td>
+                                <input type="textarea" size="100%" id="new_task_name">
+                            </td>
+                            <td>
+                                <select id="dom_[% schedule_entry.task_id %]">
+                                    
+                                    [% FOREACH allowed_dom IN allowed_doms %]
+                                    
+                                        <option>[% allowed_dom %]</option>
+                                        
+                                    [% END %]
+                                    
+                                </select>
+                            </td>
+                            <td>
+                                <select id="dow_[% schedule_entry.task_id %]">
 
+                                    [% FOREACH allowed_dow IN allowed_dows %]
+
+                                        <option value="[% loop.index %]">[% allowed_dow %]</option>
+
+                                    [% END %]
+
+                                </select>
+                            </td>
+                            <td>
+                                <select id="month_[% schedule_entry.task_id %]">
+
+                                    [% FOREACH allowed_month IN allowed_months %]
+
+                                        <option value="[% loop.index %]">[% allowed_month %]</option>
+
+                                    [% END %]
+
+                                </select>
+                            </td>
+                            <td>
+                                <select id="interval_values_[% schedule_entry.task_id %]">
+
+                                    [% FOREACH allowed_interval_value IN allowed_interval_values %]
+
+                                        <option>[% allowed_interval_value %]</option>
+
+                                    [% END %]
+
+                                </select>
+                                <select id="interval_types_[% schedule_entry.task_id %]">
+
+                                    [% FOREACH allowed_interval_type IN allowed_interval_types %]
+
+                                        <option>[% allowed_interval_type %]</option>
+                                        
+                                    [% END %]
+                                    
+                                </select>
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+                                <div class="icons">
+                                    <a href="#" id="update_schedule_entry_[% schedule_entry.id %]" title="Aufgabe und Plan hinzufügen" onclick="add_task_and_schedule_entry([% schedule_entry.id %])">
+                                        <img src="TT/img/add.png">
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        [% FOREACH schedule_entry IN schedule_entries %]
+
+                            <tr class="[% loop.parity %]">
+                                <td title="[% schedule_entry.task_description %]">
+
+                                    [% schedule_entry.task_id %]
+
+
+                                    [% schedule_entry.task_name %]
+
+                                </td>
+                                <td>
+                                    <select id="dom_[% schedule_entry.task_id %]">
+
+                                        [% FOREACH allowed_dom IN allowed_doms %]
+
+                                            <option [% IF schedule_entry.dom_ == allowed_dom %] selected[% END %]>[% allowed_dom %]</option>
+
+                                        [% END %]
+
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="dow_[% schedule_entry.task_id %]">
+
+                                        [% FOREACH allowed_dow IN allowed_dows %]
+
+                                            <option value="[% loop.index %]" [% IF schedule_entry.dow == allowed_dow %] selected[% END %]>[% allowed_dow %]</option>
+
+                                        [% END %]
+
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="month_[% schedule_entry.task_id %]">
+
+                                        [% FOREACH allowed_month IN allowed_months %]
+
+                                            <option value="[% loop.index %]" [% IF schedule_entry.month == allowed_month %] selected[% END %]>[% allowed_month %]</option>
+
+                                        [% END %]
+
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="interval_values_[% schedule_entry.task_id %]">
+
+                                        [% FOREACH allowed_interval_value IN allowed_interval_values %]
+
+                                            <option [% IF schedule_entry.interval_value == allowed_interval_value %] selected[% END %]>[% allowed_interval_value %]</option>
+
+                                        [% END %]
+
+                                    </select>
+                                    <select id="interval_types_[% schedule_entry.task_id %]">
+
+                                        [% FOREACH allowed_interval_type IN allowed_interval_types %]
+
+                                            <option [% IF schedule_entry.interval_type == allowed_interval_type %] selected[% END %]>[% allowed_interval_type %]</option>
+
+                                        [% END %]
+
+                                    </select>
+                                </td>
+                                <td>
+                                    <div class="icons">
+                                        <a href="#" id="delete_schedule_entry_[% schedule_entry.id %]" title="Plan löschen" onclick="delete_schedule_entry([% schedule_entry.id %])">
+                                            <img src="TT/img/delete.png">
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="icons">
+                                        <a href="#" id="update_schedule_entry_[% schedule_entry.id %]" title="Plan aktualisieren" onclick="update_schedule_entry([% schedule_entry.id %])">
+                                            <img src="TT/img/ok.png">
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                        [% END %]
+                        
+                    </table>
+                    
+                [% END %]
+                
         </form>
     </body>
 </html>

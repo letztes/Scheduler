@@ -2,14 +2,13 @@ package Scheduler::Scheduler;
 
 use warnings;
 use strict;
+use utf8;
 
 use DBI;
 use Encode ( 'decode', 'encode' );
-binmode STDOUT, ":encoding(utf8)";
 
 use Data::Dumper;
 
-#use lib '/home/artur/public_html/Scheduler/';
 use Scheduler::Schema;
 
 # debug sql with DBIC_TRACE=1
@@ -28,6 +27,10 @@ sub get_current_tasks {
 
     my @current_tasks;
     my %interval_for_task = ();
+    
+    # Fetches schedule info per task.
+    # In order to build the sqls for query whether task is
+    # done or not yet done.
     my $schedule_rs =
       $schema->resultset('Schedule')->search( { 'user_id' => $user_id } );
 
@@ -35,15 +38,13 @@ sub get_current_tasks {
         $interval_for_task{ $row->task_id } =
           $row->interval_value . " " . $row->interval_type;
     }
+    
+    
 
     foreach my $task_id ( keys %interval_for_task ) {
 
-        my $sql =
-"SELECT * FROM TASKS WHERE id = ? AND NOT EXISTS ( SELECT 1 FROM LOG WHERE task_id=? AND DATE_ADD(dt_done, INTERVAL $interval_for_task{ $task_id }) > NOW() )";
-
-        # oder
-        $sql =
-"SELECT * FROM TASKS WHERE id = 2 AND id NOT IN ( SELECT task_id FROM LOG WHERE task_id=2 AND DATE_ADD(dt_done, INTERVAL 2 WEEK) > NOW() )";
+        # Subquery returns all done tasks from log.
+        # In order to exclude them from those not yet done.
         my $scalar    = " > NOW()";
         my $inside_rs = $schema->resultset('Log')->search(
             {
@@ -52,7 +53,9 @@ sub get_current_tasks {
                   \$scalar,
             }
         );
-
+        
+        # The actual query for those tasks not yet done.
+        # Utilizes the subquery defined above.
         my $tasks_rs = $schema->resultset('Task')->search(
             {
                 'id' => $task_id,
@@ -67,8 +70,8 @@ sub get_current_tasks {
         while ( my $row = $tasks_rs->next() ) {
             push @current_tasks,
               {
-                name        => encode( 'utf8', $row->name ),
-                description => encode( 'utf8', $row->description ),
+                name        => $row->name,
+                description => $row->description,
                 id          => $task_id,
               };
         }
@@ -118,12 +121,99 @@ sub get_log_entries {
 
     while ( my $result = $log_rs->next() ) {
         push @log_entries,
-          { 'dt_done' => $result->get_column('date_done'),
-            'task_name' => $result->get_column('task_name'), };
+          {
+            'dt_done' => $result->get_column('date_done'),
+            'task_name' => $result->get_column('task_name'),
+            'task_id'   => $result->task_id,
+          };
     }
 
-    #print Dumper \@log_entries; exit;
     return \@log_entries;
+}
+
+sub show_schedule {
+    my ($arg_href) = @_;
+    my $user_id = $arg_href->{'user_id'} // return;
+    my $task_id = $arg_href->{'task_id'};
+    
+    my @schedule_entries;
+    
+    my %where_conditions;
+    $where_conditions{ 'user_id' } = $user_id;
+    $where_conditions{ 'task_id' } = $task_id if $task_id;
+    
+    my $schedule_rs = $schema->resultset('Schedule')->search(
+        {
+            %where_conditions,
+        },
+        {
+            '+select'  => ['task.name','task.description'],
+            '+as'      => ['task_name','task_description'],
+            'join'     => 'task',
+        }
+    );
+    
+    while ( my $result = $schedule_rs->next() ) {
+        #warn Dumper \$result->get_columns();
+        push @schedule_entries,
+            {
+                'id'             => $result->id,
+                'task_name'      => $result->get_column('task_name'),
+                'task_description'      => $result->get_column('task_description'),
+                'user_id'        => $result->user_id,
+                'task_id'        => $result->task_id,
+                'interval_type'  => $result->interval_type,
+                'interval_value' => $result->interval_value,
+                'dom'            => $result->dom,
+                'dow'            => $result->dow,
+                'month'          => $result->month,
+            }
+    }
+    
+    return( {
+        'schedule_entries'        => \@schedule_entries,
+        'allowed_doms'            => get_allowed_doms(),
+        'allowed_dows'            => get_allowed_dows(),
+        'allowed_months'          => get_allowed_months(),
+        'allowed_interval_types'  => get_allowed_interval_types(),
+        'allowed_interval_values' => get_allowed_interval_values(),
+    });
+}
+
+sub get_allowed_doms {
+    
+    return( [ undef, (1..31) ] );
+}
+
+sub get_allowed_months {
+    
+    # TODO: separate database table DOWS:
+    # (id, name, index COMMENT('1=january,12=december'), lang)
+    
+    return( [ undef, qw( Jan Feb Mär Apr Mai Jun Jul Aug Sep Okt Nov Dez ) ] );
+}
+
+sub get_allowed_interval_values {
+    
+    return( [ undef, (1..50) ] );
+}
+
+sub get_allowed_interval_types {
+    
+    # TODO: separate database table interval_types:
+    # (id, name, english_name COMMENT('english names are hash keys'), lang)
+    
+    # The first element is for index 0 resp. NULL/undef
+    return( [ undef, qw( day week month year ) ] );
+}
+
+sub get_allowed_dows {
+    
+    # TODO: separate database table DOWS:
+    # (id, name, index COMMENT('1=monday,7=sunday'), lang)
+    
+    # The first element is for index 0 resp. NULL/undef
+    return( [ undef, qw( Mo Di Mi Do Fr Sa So) ] );
 }
 
 1;

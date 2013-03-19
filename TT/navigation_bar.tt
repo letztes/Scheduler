@@ -1,0 +1,27 @@
+
+        <div class="navigation_bar">
+            <div class="icons" id="show_current_tasks_in_navigation_bar" title="Zu erledigende Aufgaben anzeigen">
+                <a href="?user_id=[% user_id %]&amp;todo=show_current_tasks">
+                    <img src="TT/img/clock.png">
+                </a>
+                <br>
+                Todo
+            </div>
+            
+            <div class="icons" id="show_preferences_in_navigation_bar" title="Zeitplan-Einstellungen vornehmen">
+                <a href="?user_id=[% user_id %]&amp;todo=show_schedule">
+                    <img src="TT/img/preferences.png">
+                </a>
+                <br>
+                Plan
+            </div>
+            
+            <div class="icons" id="show_log_in_navigation_bar" title="Verlaufshistorie aller Aufgaben anzeigen">
+                <a href="?user_id=[% user_id %]&amp;todo=show_log">
+                    <img src="TT/img/tasks.png">
+                </a>
+                <br>
+                Log
+            </div>
+            
+        </div>

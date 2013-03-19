@@ -1,3 +1,23 @@
+@media only screen and (max-device-width:480px) and    
+(orientation: portrait), only screen and (max-device-width:800px) and (orientation:  
+landscape) {
+    body {
+        font-size:200%;
+    }
+}
+
+.navigation_bar {
+    display:block;
+    width:100%;
+    overflow-x:auto;
+    overflow-y:auto;
+}
+
+.schedule_table {
+    border-style:solid;
+    border-width:1px;
+}
+
 .todo_tasks {
     margin-bottom:10px;
     padding:10px;
@@ -14,12 +34,13 @@
 }
 .icons {
     background-color:#eed1d1;
-    margin:5px;
-    padding:5px;
+    margin:10px;
+    padding:10px;
     float:left;
     border-radius:10px;
     border-width:medium;
     border-color:000;
+    text-align:center;
 }
 .hovered {
     background-color:#edd;

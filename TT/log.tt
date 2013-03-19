@@ -1,13 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
-        <title>scheduler</title>
-        <link rel="stylesheet" type="text/css" href="TT/styles.css">
-        <script src="TT/jquery-1.9.1.min.js"></script>
-        <script src="TT/script.js"></script>
-        </script>
+        <title>Log</title>
+        [% INCLUDE head.tt %]
     </head>
     <body>
+        [% INCLUDE navigation_bar.tt %]
         <h1>Historie</h1>
         <h2>[% task_name %]
         <form method="post" action="?todo=save_preferences">
@@ -19,7 +17,7 @@
                 </tr>
                 [% FOREACH log_entry IN log_entries %]
                     <tr class="[% loop.parity %]">
-                        <td>[% log_entry.task_name %]</td>
+                        <td><a href="?user_id=[% user_id %]&amp;task_id=[% log_entry.task_id %]&amp;todo=show_log">[% log_entry.task_name %]</a></td>
                         <td>[% log_entry.dt_done   %]</td>
                     </tr>
                 [% END %]
